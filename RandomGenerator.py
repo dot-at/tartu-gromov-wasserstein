@@ -35,7 +35,7 @@ def export(name,g,Distance,Distribution="uniform"):
         f.writelines(tmp)
 #######################################################
 #
-# Uncoment the line you need and input the desired parameters
+# Uncomment the line you need and input the desired parameters
 #
 #######################################################
 # g = nx.fast_gnp_random_graph(n, p, seed=None, directed=False)
