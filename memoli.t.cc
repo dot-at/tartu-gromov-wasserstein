@@ -222,7 +222,7 @@ int Gromov_Wasserstein::Memoli<M1,M2>::compute_it(std::string *p_return_info)
         for (int i=0; i<n_inner_iter; ++i) {
             log<<"Gromov_Wasserstein::Memoli: LP # "<<std::setw(4)<<o<<'|'<<std::setw(4)<<i<<": 1-"<<std::flush;
 
-            // set up objective function
+            // Phase 1: Set up objective function
             if (i==0) { // start new outer iteration
                 if (o==0) {
                     make_initial_obj();
@@ -239,6 +239,7 @@ int Gromov_Wasserstein::Memoli<M1,M2>::compute_it(std::string *p_return_info)
                 make_next_obj__sparse();
             }
 
+            // Phase 2: Solve the LP
             if (!warm_start_LPs) {
                 p_model->reset();
                 log<<"2+"<<std::flush;
@@ -251,9 +252,11 @@ int Gromov_Wasserstein::Memoli<M1,M2>::compute_it(std::string *p_return_info)
                 return -1;
             }
 
+            // Phase 3: Read out the solution from the LP variables
             log<<"3"<<std::flush;
             current_solution_value  =   make_current_LP_sol();
 
+            // Phase 4: Check if there's a new best solution
             bool new_best = false;
             if (current_solution_value < best_solution_value) {
                 log<<"-4"<<std::flush;
@@ -262,16 +265,23 @@ int Gromov_Wasserstein::Memoli<M1,M2>::compute_it(std::string *p_return_info)
                 new_best=true;
             } else log<<"  ";
 
+            // Criteria for BREAKING out of inner loop:
+            bool break_inner_loop = false;
+            if (p_model->get(GRB_DoubleAttr_IterCount) == 0)  break_inner_loop=true;
+            // More sophistic criteria here
+            // ...
+
+            // Output of LP stats:
             log<<" done"
                <<"; Value:"<<(new_best? "* " : "  ")<<std::setw(9)<<current_solution_value
                <<"; nnz: "<<std::setw(6)<<current_LP_sol.size()
                <<"; Simplex iters: "<<std::setw(9)<<p_model->get(GRB_DoubleAttr_IterCount)
                <<"; Simplex time: "<<std::setw(9)<<p_model->get(GRB_DoubleAttr_Runtime)<<"s"
+               <<(break_inner_loop?  "; BREAK INNER LOOP" : "; continue" )
                <<std::endl;
 
-            // Have stopping criterion here:
-            // ...
 
+            if (break_inner_loop)  break;
         } //^ for i (inner loop)
 
     } //^ for o (outer loop)
