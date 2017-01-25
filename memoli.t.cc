@@ -268,6 +268,10 @@ int Gromov_Wasserstein::Memoli<M1,M2>::compute_it(std::string *p_return_info)
                <<"; Simplex iters: "<<std::setw(9)<<p_model->get(GRB_DoubleAttr_IterCount)
                <<"; Simplex time: "<<std::setw(9)<<p_model->get(GRB_DoubleAttr_Runtime)<<"s"
                <<std::endl;
+
+            // Have stopping criterion here:
+            // ...
+
         } //^ for i (inner loop)
 
     } //^ for o (outer loop)

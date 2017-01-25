@@ -211,7 +211,7 @@ int main(int argc, char *argv[]) try
                      <<','<<stat_marginal_violation
                      <<','<<stat_nonnegat_violation
                      <<','<<stat_nnz
-                     <<','<<std::endl;
+                     <<std::endl;
         } else {
             std::cout<<"Done!\n"
                      <<"Time:                         "<<stat_time<<"s\n"
