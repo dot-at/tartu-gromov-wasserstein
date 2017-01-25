@@ -57,9 +57,10 @@ D = nx.all_pairs_shortest_path_length(g)
 C = nx.connected_components(g)
 #################################
 #
-# To output the results in another folder change name_index variable
+# To output the results in another folder change path variable
 #
 #################################
+path = ""
 name_index = 0
 #################################
 #
@@ -69,5 +70,5 @@ name_index = 0
 treshold = 0
 for i in C:
     if len(i) > treshold:
-        export(str(name_index),sorted(i),D,"general")
+        export(path + str(name_index),sorted(i),D,"general")
         name_index += 1
