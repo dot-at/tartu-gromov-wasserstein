@@ -36,6 +36,7 @@ namespace Gromov_Wasserstein {
 
         std::ostream & log;
         const char *   gurobi_log_file;
+        const int      gurobi_threads;
         const double   eps;
         const int      n_outer_iter;
         const int      n_inner_iter;
@@ -68,6 +69,7 @@ namespace Gromov_Wasserstein {
                int n_outer_iterations = 10, int n_inner_iterations = 100,
                bool warm_start_inner_LPs = false,
                std::ostream& _log=std::cout, const char * gurobi_log_file=0,
+               int gurobi_threads=0,
                double eps=1.e-100);
         ~Memoli();
     };

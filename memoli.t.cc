@@ -16,11 +16,13 @@ Gromov_Wasserstein::Memoli<M1,M2>::Memoli(const M1 & _X1, const M2 & _X2, double
                                           int n_outer_iterations, int n_inner_iterations,
                                           bool warm_start,
                                           std::ostream& _log, const char * _gurobi_log_file,
+                                          int _gurobi_threads,
                                           double _eps)
     :
     GW_distance<M1,M2>(_X1,_X2,p),
     log{_log},
     gurobi_log_file{_gurobi_log_file},
+    gurobi_threads{_gurobi_threads},
     eps{_eps},
     n_outer_iter{n_outer_iterations},
     n_inner_iter{n_inner_iterations},
@@ -199,6 +201,7 @@ int Gromov_Wasserstein::Memoli<M1,M2>::compute_it(std::string *p_return_info)
 
     p_model->set(GRB_IntParam_LogToConsole, 0);
     p_model->set(GRB_StringParam_LogFile, (gurobi_log_file? gurobi_log_file : "") );
+    p_model->getEnv().set(GRB_IntParam_Threads,gurobi_threads);
 
     // Prepare for initial LP
     var = p_model->addVars(nullptr, // lb=0

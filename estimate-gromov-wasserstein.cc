@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <ctime>
+#include <limits>
 
 #include "gromov_wasserstein.hh"
 #include "memoli.hh"
@@ -31,6 +32,7 @@ const char * const usgMsg =
     "  -q      quiet, only print stats\n"
     "  -v      verbose output\n"
     "  -l      turn on logging of the LP solver (to log file)\n"
+    "  -r#     run Gurobi with the given number of threads (default 0=max)\n"
     "  -o$     ouput: write resulting PDF to file $\n"
     "Options for Memoli's heuristic:\n"
     "  -i#     max number of inner iterations (default 25)\n"
@@ -103,13 +105,14 @@ int main(int argc, char *argv[]) try
     bool        d_scale           = false;  // -d
     int         output_level      = 0;      // -q -v
     bool        gurobi_log        = false;  // -l
+    int         gurobi_threads    = 0;      // -r
     std::string outfilename       = "";     // -O:
     int         memoli_inner_iter = 25;     // -i:
     int         memoli_outer_iter = 3;      // -j:
     int         random_seed       = 12345;  // -s:
     bool        warm_start_LPs    = false;  // -w
 
-    const char * options = "h" "p:" "d" "q" "v" "l" "O:" "i:" "j:" "s:" "w";
+    const char * options = "h" "p:" "d" "q" "v" "l" "r:" "O:" "i:" "j:" "s:" "w";
     for (char arg=getopt(argc, argv, options); arg!=-1; arg=getopt(argc, argv, options) ) {
         char * str_end;
         switch (arg) {
@@ -119,6 +122,7 @@ int main(int argc, char *argv[]) try
         case 'q': output_level   = -1;                                                                                                                            break;
         case 'v': output_level   = +1;                                                                                                                            break;
         case 'l': gurobi_log     = true;                                                                                                                          break;
+        case 'r': gurobi_threads = std::strtol(optarg,&str_end,10);     if(*str_end!='\0' || gurobi_threads<0) return std::cerr<<"Invalid use of -r.\n", 1;       break;
         case 'O': outfilename    = optarg;                                                                                                                        break;
 
         case 'i': memoli_inner_iter = std::strtol(optarg,&str_end,10);  if(*str_end!='\0' || memoli_inner_iter<1) return std::cerr<<"Invalid use of -i.\n", 1;    break;
@@ -190,7 +194,7 @@ int main(int argc, char *argv[]) try
     const std::clock_t t_0 = std::clock();
     std::ostream devnull (0);
     Memoli  memoli (X1,X2,p, memoli_outer_iter, memoli_inner_iter,  warm_start_LPs,
-                    (output_level > 0 ? std::cout : devnull), (gurobi_log? "estimate-gromov-wasserstein--LP-solver.log" : (const char *)NULL) );
+                    (output_level > 0 ? std::cout : devnull), (gurobi_log? "estimate-gromov-wasserstein--LP-solver.log" : (const char *)NULL), gurobi_threads );
     int     retval = memoli.compute_it(&return_string);
     const std::clock_t t_1 = std::clock();
 
@@ -206,8 +210,9 @@ int main(int argc, char *argv[]) try
         if (output_level < 0) {
             std::cout<<"Memoli,"<<fn1<<','<<fn2
                      <<','<<(stat_success? 'y' : 'n')
-                     <<','<<stat_time
-                     <<','<<stat_distance
+                     <<','<<stat_time;
+            std::cout.precision(std::numeric_limits<double>::max_digits10);
+            std::cout<<','<<stat_distance
                      <<','<<stat_marginal_violation
                      <<','<<stat_nonnegat_violation
                      <<','<<stat_nnz
