@@ -33,7 +33,7 @@ const char * const usgMsg =
     "  -v      verbose output\n"
     "  -l      turn on logging of the LP solver (to log file)\n"
     "  -r#     run Gurobi with the given number of threads (default 0=max)\n"
-    "  -o$     ouput: write resulting PDF to file $\n"
+    "  -O$     ouput: write resulting PDF to file $\n"
     "Options for Memoli's heuristic:\n"
     "  -i#     max number of inner iterations (default 25)\n"
     "  -j#     number of outer iterations (default 3)\n"
