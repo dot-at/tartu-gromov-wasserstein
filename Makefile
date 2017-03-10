@@ -4,7 +4,7 @@ LINK_GUROBI=-L/opt/gurobi/linux64/lib/ -lgurobi_c++ -lgurobi70
 CCC=g++
 #CCCDEBUGFLAGS= -g -O0 -fno-inline -fno-eliminate-unused-debug-types
 CCCDEBUGFLAGS= -O
-CCCFLAGS= $(INCLUDE_GUROBI) $(CCCDEBUGFLAGS) -std=gnu++14  -Wall #-DGromov_Wasserstein_DEBUG
+CCCFLAGS= $(INCLUDE_GUROBI) $(CCCDEBUGFLAGS) -std=gnu++11  -Wall #-DGromov_Wasserstein_DEBUG
 
 HEADERS        = gromov_wasserstein.hh memoli.hh
 TEMPLATE_FILES = memoli.t.cc
